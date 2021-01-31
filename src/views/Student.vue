@@ -2,9 +2,10 @@
   <h1 class="font-weight-bold">Todo App with Api Call</h1>
   <div class="container-fluid">
     <div class="row justify-content-center">
+      <!-- Students Tables  -->
       <div class="col-8">
         <div class="card">
-          <div class="card-header bg-dark text-light">
+          <div class="card-header bg-dark text-light text-left">
             <h3>All Students</h3>
           </div>
           <div class="card-body">
@@ -28,7 +29,9 @@
                     <button @click="showStudent(student)" class="btn btn-primary m-1">
                       Show
                     </button>
-                    <button class="btn btn-info m-1">Edit</button>
+                    <button @click="editStudent(student)" class="btn btn-info m-1">
+                      Edit
+                    </button>
                     <button
                       onclick="return confirm('Are you sure you want to delete this item?');"
                       @click="deleteStudent(student.id)"
@@ -48,9 +51,11 @@
           </div>
         </div>
       </div>
-      <div class="col-4">
+
+      <!-- Create Student Form  -->
+      <div class="col-4" v-if="!editForm.isUpdate">
         <div class="card">
-          <div class="card-header bg-dark text-light">
+          <div class="card-header bg-dark text-light text-left">
             <h3>Create Student</h3>
           </div>
           <div class="card-body">
@@ -92,67 +97,128 @@
           </div>
         </div>
       </div>
+
+      <!-- Edit Student Form  -->
+      <div class="col-4" v-else>
+        <div class="card">
+          <div class="card-header bg-dark text-light text-left">
+            <!-- <div> -->
+            <h3 class="display-inline-block">Edit Student</h3>
+            <button
+              @click="editForm.isUpdate = false"
+              class="float-right btn btn-primary"
+            >
+              Create
+            </button>
+            <!-- </div> -->
+          </div>
+          <div class="card-body">
+            <form class="text-left" @submit.prevent="updateStudentForm(editForm.id)">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input
+                  v-model="editForm.name"
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  placeholder="Name"
+                />
+              </div>
+              <div class="form-group">
+                <label for="roll">Roll</label>
+                <input
+                  v-model="editForm.roll"
+                  type="text"
+                  class="form-control"
+                  id="roll"
+                  placeholder="Roll"
+                />
+              </div>
+              <div class="form-group">
+                <label for="address">Address</label>
+                <textarea
+                  v-model="editForm.address"
+                  class="form-control"
+                  id="address"
+                  rows="5"
+                  placeholder="Address"
+                ></textarea>
+              </div>
+              <div class="form-group">
+                <button class="btn btn-primary">Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Show Modal -->
-  <div
-    class="modal fade show"
-    style="display: block"
-    v-show="showForm.showModal"
-    data-backdrop="static"
-    data-keyboard="false"
-    tabindex="-1"
-    aria-labelledby="staticBackdropLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
-          <button
-            @click="showForm.showModal = false"
-            type="button"
-            class="close"
-            data-dismiss="modal"
-            aria-label="Close"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form class="text-left">
-            <div class="form-group">
-              <label>Name</label>
-              <input v-model="showForm.name" type="text" class="form-control" disabled />
+  <div v-if="showForm.showModal">
+    <transition name="modal">
+      <div class="modal-mask">
+        <div class="modal-wrapper">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Student Information</h5>
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true" @click="showForm.showModal = false"
+                    >&times;</span
+                  >
+                </button>
+              </div>
+              <div class="modal-body">
+                <form class="text-left">
+                  <div class="form-group">
+                    <label>Name</label>
+                    <input
+                      v-model="showForm.name"
+                      type="text"
+                      class="form-control"
+                      disabled
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Roll</label>
+                    <input
+                      v-model="showForm.roll"
+                      type="text"
+                      class="form-control"
+                      disabled
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label>Address</label>
+                    <textarea
+                      v-model="showForm.address"
+                      class="form-control"
+                      rows="5"
+                      disabled
+                    ></textarea>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  @click="showForm.showModal = false"
+                >
+                  Close
+                </button>
+              </div>
             </div>
-            <div class="form-group">
-              <label>Roll</label>
-              <input v-model="showForm.roll" type="text" class="form-control" disabled />
-            </div>
-            <div class="form-group">
-              <label>Address</label>
-              <textarea
-                v-model="showForm.address"
-                class="form-control"
-                rows="5"
-                disabled
-              ></textarea>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            @click="showForm.showModal = false"
-            type="button"
-            class="btn btn-secondary"
-            data-dismiss="modal"
-          >
-            Close
-          </button>
+          </div>
         </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -167,6 +233,14 @@ export default {
       name: "",
       roll: "",
       address: "",
+    });
+
+    const editForm = reactive({
+      id: "",
+      name: "",
+      roll: "",
+      address: "",
+      isUpdate: false,
     });
 
     const showForm = reactive({
@@ -187,8 +261,7 @@ export default {
           roll: form.roll,
           address: form.address,
         })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           form.name = "";
           form.roll = "";
           form.address = "";
@@ -201,16 +274,33 @@ export default {
       showForm.name = student.name;
       showForm.roll = student.roll;
       showForm.address = student.address;
+    }
 
-      // axios.delete(`http://127.0.0.1:8000/api/student/${id}`).then((response) => {
-      //   console.log(response);
-      //   store.dispatch("loadStudents");
-      // });
+    function editStudent(student) {
+      console.log(student);
+      editForm.isUpdate = true;
+      editForm.id = student.id;
+      editForm.name = student.name;
+      editForm.roll = student.roll;
+      editForm.address = student.address;
+    }
+
+    function updateStudentForm(id) {
+      axios
+        .put(`http://127.0.0.1:8000/api/student/${id}`, {
+          name: editForm.name,
+          roll: editForm.roll,
+          address: editForm.address,
+        })
+        .then((response) => {
+          console.log(response);
+          editForm.isUpdate = false;
+          store.dispatch("loadStudents");
+        });
     }
 
     function deleteStudent(id) {
-      axios.delete(`http://127.0.0.1:8000/api/student/${id}`).then((response) => {
-        console.log(response);
+      axios.delete(`http://127.0.0.1:8000/api/student/${id}`).then(() => {
         store.dispatch("loadStudents");
       });
     }
@@ -221,9 +311,31 @@ export default {
       students,
       loadStudents,
       addStudentForm,
+      editForm,
       showStudent,
+      editStudent,
+      updateStudentForm,
       deleteStudent,
     };
   },
 };
 </script>
+
+<style>
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: table;
+  transition: opacity 0.3s ease;
+}
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+</style>
