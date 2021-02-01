@@ -4,11 +4,6 @@ import axios from 'axios'
 export default createStore({
   state: {
     students:[]
-    // students: [
-    //   { name: 'arif', roll: 1234, address: "asdasasdsa"},
-    //   { name: 'khan', roll: 1234, address: "asdasasdsa"},
-    //   { name: 'islam', roll: 5456234, address: "asdasasasdasdasddsa"}
-    // ]
   },
   actions: {
     async loadStudents({ commit }){

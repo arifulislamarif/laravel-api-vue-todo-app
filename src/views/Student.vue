@@ -63,12 +63,21 @@
               <div class="form-group">
                 <label for="name">Name</label>
                 <input
+                  @keyup.prevent="addStudentForm"
                   v-model="form.name"
                   type="text"
                   class="form-control"
                   id="name"
                   placeholder="Name"
+                  :class="errorMsg.errFieldName ? 'error-field' : ''"
                 />
+                <span
+                  v-for="(err_name, index) in errorMsg.name"
+                  :key="index"
+                  class="text-danger"
+                >
+                  {{ err_name }}
+                </span>
               </div>
               <div class="form-group">
                 <label for="roll">Roll</label>
@@ -78,7 +87,14 @@
                   class="form-control"
                   id="roll"
                   placeholder="Roll"
+                  :class="errorMsg.errFieldRoll ? 'error-field' : ''"
                 />
+                <span
+                  v-for="(err_roll, index) in errorMsg.roll"
+                  :key="index"
+                  class="text-danger"
+                  >{{ err_roll }}</span
+                >
               </div>
               <div class="form-group">
                 <label for="address">Address</label>
@@ -88,7 +104,14 @@
                   id="address"
                   rows="5"
                   placeholder="Address"
+                  :class="errorMsg.errFieldAddress ? 'error-field' : ''"
                 ></textarea>
+                <span
+                  v-for="(err_address, index) in errorMsg.address"
+                  :key="index"
+                  class="text-danger"
+                  >{{ err_address }}</span
+                >
               </div>
               <div class="form-group">
                 <button class="btn btn-primary">Create</button>
@@ -102,7 +125,6 @@
       <div class="col-4" v-else>
         <div class="card">
           <div class="card-header bg-dark text-light text-left">
-            <!-- <div> -->
             <h3 class="display-inline-block">Edit Student</h3>
             <button
               @click="editForm.isUpdate = false"
@@ -110,7 +132,6 @@
             >
               Create
             </button>
-            <!-- </div> -->
           </div>
           <div class="card-body">
             <form class="text-left" @submit.prevent="updateStudentForm(editForm.id)">
@@ -250,6 +271,15 @@ export default {
       showModal: false,
     });
 
+    const errorMsg = reactive({
+      name: [],
+      roll: [],
+      address: [],
+      errFieldName: false,
+      errFieldRoll: false,
+      errFieldAddress: false,
+    });
+
     const store = useStore();
     const students = computed(() => store.state.students);
     const loadStudents = onMounted(() => store.dispatch("loadStudents"));
@@ -266,6 +296,25 @@ export default {
           form.roll = "";
           form.address = "";
           store.dispatch("loadStudents");
+        })
+        .catch((error) => {
+          if (error.response.status === 422) {
+            let nameErrorMessage = error.response.data.errors.name;
+            let rollErrorMessage = error.response.data.errors.roll;
+            let addressErrorMessage = error.response.data.errors.address;
+
+            if (nameErrorMessage) {
+              errorMsg.name = nameErrorMessage;
+              errorMsg.errFieldName = true;
+            } else if (rollErrorMessage) {
+              errorMsg.roll = rollErrorMessage;
+              errorMsg.errFieldRoll = true;
+            } else if (addressErrorMessage) {
+              errorMsg.address = addressErrorMessage;
+              errorMsg.errFieldAddress = true;
+            }
+            // console.log(error.response.data.errors.name);
+          }
         });
     }
 
@@ -307,6 +356,7 @@ export default {
 
     return {
       form,
+      errorMsg,
       showForm,
       students,
       loadStudents,
@@ -322,6 +372,9 @@ export default {
 </script>
 
 <style>
+.error-field {
+  border-color: red;
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
